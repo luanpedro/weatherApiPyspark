@@ -23,6 +23,8 @@ format_input = "/Users/luan/Documents/testingPysparkLocal/files/*.parquet"
 
 df = spark.read.parquet(format_input)
 
-x = df.count()
-print(x)
+volDf = df.count()
+
+print(f'Volume do dataset: {volDf}')
+
 df.printSchema()
