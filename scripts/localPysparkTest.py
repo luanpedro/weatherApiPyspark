@@ -28,3 +28,5 @@ volDf = df.count()
 print(f'Volume do dataset: {volDf}')
 
 df.printSchema()
+
+df.show(10, True)

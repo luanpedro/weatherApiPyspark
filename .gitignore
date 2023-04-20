@@ -1,3 +1,4 @@
 /files/yellow_tripdata_nyc_2022_04.parquet
-
 .DS_Store
+/luanVenv
+/apiKey.json
