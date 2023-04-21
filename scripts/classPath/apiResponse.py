@@ -13,6 +13,7 @@ from pyspark.context import *
 from pyspark.sql.functions import explode,col,regexp_replace
 from pyspark.sql import DataFrameWriter
 
+
 #getting credencias to use api
 path = "apiKey.json"
 with open(path) as file:
@@ -58,57 +59,17 @@ def explodeFunc(df):
     return df
 
 ################################### api mount and retrivieng ###################################
+def respApi():
+    #mounting url
+    url = BASE_URL + "appid=" + api_key + "&q=" + city
+    #getting response
+    response = requests.get(url).json()
+    return response
 
-#mounting url
-url = BASE_URL + "appid=" + api_key + "&q=" + city
-
-#getting response
-response = requests.get(url).json()
+response = respApi()
 temp_kelvin = response['main']['temp']
 feels_like_kelvin = response['main']['feels_like']
-
-
 temp_celsius, temp_fahrenheit = kelvin_to_celsius_fahrenheit(temp_kelvin)
 feels_like_celsius, feels_like_fahrenheit = kelvin_to_celsius_fahrenheit(feels_like_kelvin)
 today = response['dt']
 today = dt.fromtimestamp(today).strftime('%Y-%m-%d')
-
-print(response)
-print(type(response))
-print(f"Temperatura em Graus celsius: {temp_celsius:.2f}\nTemperatura em Fahrenheit: {temp_fahrenheit:.2f}" )
-print(f"Sensação de Temperatura em Graus celsius: {feels_like_celsius:.2f}\nSensação Temperatura em Fahrenheit: {feels_like_fahrenheit:.2f}" )
-print(f"Data de hj: {today}")
-
-###################################################### #pyspark ########################################################
-sc = SparkContext()
-spark = (SparkSession
-         .builder
-         .getOrCreate()
-         )
-
-rdd = sc.parallelize([response])
-df = spark.read.json(rdd)
-
-#reading all jsons locally
-#format_input = "/Users/luan/Documents/testingPysparkLocal/files/*.json"
-
-#df = spark.read.format("json") \
-#     .option('inferSchema', True) \
-#     .load(format_input)
-
-temp_celsius, temp_fahrenheit, today
-df = df.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius))).\
-        withColumn("temp_fahrenheit", lit("{:.2f}".format(temp_fahrenheit))).\
-        withColumn("prediction_date", lit(today))
-
-df.printSchema()
-
-print("DF antes do explode Func:\n")
-df.show(truncate=False)
-df.printSchema()
-
-df = explodeFunc(df)
-
-print("DF 1 depois do explode Func:\n")
-df.show(truncate=False)
-df.printSchema()
