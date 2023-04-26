@@ -72,6 +72,11 @@ dfHist.printSchema()
 
 dfHist = explodeFunc(dfHist)
 
+#temp_celsius, temp_fahrenheit, today
+dfHist = dfHist.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius_hist))).\
+        withColumn("temp_fahrenheit", lit("{:.2f}".format(temp_fahrenheit_hist))).\
+        withColumn("prediction_date", lit(hist_day))
+
 print("DF Hist 1 depois do explode Func:\n")
 dfHist.show(truncate=False)
 dfHist.printSchema()
