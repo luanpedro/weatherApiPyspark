@@ -55,11 +55,12 @@ def explodeFunc(df):
             for c in colsA:
                 #print(c)
                 df = df.withColumn(f"{colu}_{c}", col(f"{colu}.{c}"))
+            df = df.drop(colu)
     return df
 
 ################################### api mount and retrivieng ###################################
 def respApiHist(time):
-    #mounting url
+    #sp location lat e long
     lat = '-23.5489'
     lon = '-46.6388'
     datetime = time
