@@ -19,6 +19,7 @@ path = "apiKey.json"
 with open(path) as file:
     data = json.load(file)
 
+BASE_URL = "https://api.openweathermap.org/data/3.0/onecall/timemachine?"
 api_key = data["key_new"]
 city = "Sao Paulo"
 
@@ -55,18 +56,19 @@ def explodeFunc(df):
             for c in colsA:
                 #print(c)
                 df = df.withColumn(f"{colu}_{c}", col(f"{colu}.{c}"))
+            df = df.drop(colu)
     return df
 
 ################################### api mount and retrivieng ###################################
 def respApiHist(time):
-    #mounting url
+    #sp location lat e long
     lat = '-23.5489'
     lon = '-46.6388'
     datetime = time
     #timeX = str(dt.strptime(datetime, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
     timeX = str(dt.strptime(datetime, "%Y-%m-%d").timestamp())
     timeX = timeX.replace('.0','')
-    url =  f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={timeX}&appid={api_key}"
+    url =  f"{BASE_URL}lat={lat}&lon={lon}&dt={timeX}&appid={api_key}"
     #getting response
     response = requests.get(url).json()
     return response

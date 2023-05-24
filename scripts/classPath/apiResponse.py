@@ -32,6 +32,12 @@ def kelvin_to_celsius_fahrenheit(kelvin):
     fahrenheitStr = (f"{fahrenheit}:.2f")
     return celsius, fahrenheit
 
+def kelvin_to_celsius(kelvin):
+    celsius = kelvin - 273.15
+    # celsiusStr = (f"{celsius}:.2f")
+    celsiusStr = "{:.2f}".format(celsius)
+    return celsiusStr
+
 def colsDictTp(df):
     dictCols = {}
     for col in df.dtypes:
@@ -56,6 +62,7 @@ def explodeFunc(df):
             for c in colsA:
                 #print(c)
                 df = df.withColumn(f"{colu}_{c}", col(f"{colu}.{c}"))
+            df = df.drop(colu)
     return df
 
 ################################### api mount and retrivieng ###################################
@@ -73,3 +80,4 @@ temp_celsius, temp_fahrenheit = kelvin_to_celsius_fahrenheit(temp_kelvin)
 feels_like_celsius, feels_like_fahrenheit = kelvin_to_celsius_fahrenheit(feels_like_kelvin)
 today = response['dt']
 today = dt.fromtimestamp(today).strftime('%Y-%m-%d')
+kelvin_to_celsius_udf = udf(lambda x: kelvin_to_celsius(x), StringType())
