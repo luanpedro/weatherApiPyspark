@@ -5,8 +5,8 @@ from pyspark.sql.functions import *
 from pyspark.sql import functions as F
 from pyspark.sql.types import *
 from pyspark.sql.functions import explode,col,regexp_replace
-from classPath.apiResponse import respApi, explodeFunc, temp_celsius, temp_kelvin, temp_fahrenheit, today
-from classPath.apiResponseHist import respApiHist, kelvin_to_celsius_fahrenheit
+from functions.apiResponse import respApi, explodeFunc, temp_celsius, temp_kelvin, temp_fahrenheit, today
+from functions.apiResponseHist import respApiHist, kelvin_to_celsius_fahrenheit
 #python
 import requests
 from datetime import datetime as dt
