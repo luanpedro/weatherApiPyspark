@@ -2,3 +2,5 @@
 .DS_Store
 /luanVenv
 /apiKey.json
+/doc/Tech Challenge (20230126).pdf
+/scripts/__pycache__
