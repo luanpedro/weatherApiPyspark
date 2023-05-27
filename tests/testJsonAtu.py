@@ -11,7 +11,7 @@ import requests
 from datetime import datetime as dt, timezone
 import json
 
-path = '/Users/luan/Documents/testingPysparkLocal/files/exemploWeatherApiResponse.json'
+path = '/Users/luan/Documents/weatherApiPyspark/files/exemploWeatherApiResponse.json'
 
 with open(path) as file:
     response = json.load(file)
@@ -91,6 +91,7 @@ rdd = sc.parallelize([response])
 
 # spark read json file
 df = spark.read.json(rdd)
+df.printSchema()
 
 df = df.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius))).\
         withColumn("temp_fahrenheit", lit("{:.2f}".format(temp_fahrenheit))).\

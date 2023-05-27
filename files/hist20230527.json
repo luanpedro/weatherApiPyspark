@@ -1,0 +1,30 @@
+{
+    "lat": -23.5489,
+    "lon": -46.6388,
+    "timezone": "America/Sao_Paulo",
+    "timezone_offset": -10800,
+    "data": [
+        {
+            "dt": 1653609600,
+            "sunrise": 1653557918,
+            "sunset": 1653596933,
+            "temp": 291.93,
+            "feels_like": 291.67,
+            "pressure": 1025,
+            "humidity": 69,
+            "dew_point": 286.13,
+            "clouds": 20,
+            "visibility": 10000,
+            "wind_speed": 2.57,
+            "wind_deg": 90,
+            "weather": [
+                {
+                    "id": 801,
+                    "main": "Clouds",
+                    "description": "few clouds",
+                    "icon": "02n"
+                }
+            ]
+        }
+    ]
+}
