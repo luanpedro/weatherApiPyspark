@@ -19,10 +19,8 @@ path = "apiKey.json"
 with open(path) as file:
     data = json.load(file)
 
-BASE_URL = "https://api.openweathermap.org/data/3.0/onecall/timemachine?"
-api_key = data["key_new"]
-city = "Sao Paulo"
-
+BASE_URL_HIST = "https://api.openweathermap.org/data/3.0/onecall/timemachine?"
+api_key_hist = data["key_new"]
 
 ################################### functions ###################################
 def kelvin_to_celsius_fahrenheit(kelvin):
@@ -68,7 +66,7 @@ def respApiHist(time):
     #timeX = str(dt.strptime(datetime, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
     timeX = str(dt.strptime(datetime, "%Y-%m-%d").timestamp())
     timeX = timeX.replace('.0','')
-    url =  f"{BASE_URL}lat={lat}&lon={lon}&dt={timeX}&appid={api_key}"
+    url =  f"{BASE_URL_HIST}lat={lat}&lon={lon}&dt={timeX}&appid={api_key_hist}"
     #getting response
     response = requests.get(url).json()
     return response

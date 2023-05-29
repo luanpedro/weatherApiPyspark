@@ -1,5 +1,6 @@
 /files/yellow_tripdata_nyc_2022_04.parquet
 /files/result_of_weatherApi_Request_as_DF.jl
+/files/*.csv
 .DS_Store
 /luanVenv
 /apiKey.json

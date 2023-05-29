@@ -22,6 +22,8 @@ with open(path) as file:
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
 api_key = data["key"]
 city = "Sao Paulo"
+BASE_URL_HIST = "https://api.openweathermap.org/data/3.0/onecall/timemachine?"
+api_key_hist = data["key_new"]
 
 
 ################################### functions ###################################
@@ -65,10 +67,56 @@ def explodeFunc(df):
             df = df.drop(colu)
     return df
 
+def explodeFuncMap(df):
+    dictCols = colsDictTp(df)
+    for colu, tipo in dictCols.items():
+        if tipo == "map":
+            colDf1 = 'joinId'
+            coldDf2 = colu+'_joinId'
+            keys_df = df.select(F.explode(F.map_keys(F.col(colu)))).distinct()
+            keys = list(map(lambda row: row[0], keys_df.collect()))
+            key_cols = list(map(lambda f: F.col(colu).getItem(f).alias(str(f)), keys))
+            final_cols = [F.col("joinId")] + key_cols
+            dfOut = df.select(final_cols)
+            dfOut = dfOut.select([col(c).alias(f'{colu}_{c}') for c in dfOut.columns])
+            df = df.alias("df1").join(dfOut.alias("df2"), col(colDf1) == col(coldDf2), "inner")
+            df = df.drop(colu)
+        elif tipo == "array":
+            colDf1 = 'joinId'
+            coldDf2 = colu+'_joinId'
+            newCol = "new_"+colu
+            dfA = df.select("joinId",colu, explode(colu).alias(f'{newCol}'))
+            keys_df = dfA.select(F.explode(F.map_keys(F.col(newCol)))).distinct()
+            keys = list(map(lambda row: row[0], keys_df.collect()))
+            key_cols = list(map(lambda f: F.col(newCol).getItem(f).alias(str(f)), keys))
+            final_cols = [F.col("joinId")] + key_cols
+            dfA = dfA.select(final_cols)
+            dfA = dfA.select([col(c).alias(f'{colu}_{c}') for c in dfA.columns])
+            df = df.alias("df1").join(dfA.alias("df2"), col(colDf1) == col(coldDf2), "inner")
+            df = df.drop(colu)
+        else:
+            pass
+    return df
+
+            
+
 ################################### api mount and retrivieng ###################################
 def respApi():
     #mounting url
     url = BASE_URL + "appid=" + api_key + "&q=" + city
+    #getting response
+    response = requests.get(url).json()
+    return response
+
+def respApiHist(time):
+    #sp location lat e long
+    lat = '-23.5489'
+    lon = '-46.6388'
+    datetime = time
+    #timeX = str(dt.strptime(datetime, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
+    timeX = str(dt.strptime(datetime, "%Y-%m-%d").timestamp())
+    timeX = timeX.replace('.0','')
+    url =  f"{BASE_URL_HIST}lat={lat}&lon={lon}&dt={timeX}&appid={api_key_hist}"
     #getting response
     response = requests.get(url).json()
     return response
