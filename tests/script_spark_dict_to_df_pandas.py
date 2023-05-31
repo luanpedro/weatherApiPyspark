@@ -12,6 +12,7 @@ import json
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
+
 # Python Func
 @udf(StringType())
 def kelvin_to_celsius(kelvin):
@@ -24,6 +25,7 @@ def kelvin_to_celsius(kelvin):
     return celsiusStr
 
 #===================================================  PySpark ===================================================
+# sc = SparkContext()
 
 spark = (SparkSession
          .builder
@@ -38,8 +40,12 @@ print(f"Data da previsão: {today}\nTemperatura em kelvin: {temp_kelvin}\nTemper
 respX = []
 respX.append(response)
 
-df = spark.createDataFrame(respX)
+dfPd = pd.DataFrame(respX)
+df = spark.createDataFrame(dfPd)
 df = df.withColumn("joinId", monotonically_increasing_id())
+
+# rdd = sc.parallelize([response])
+# df = spark.read.json(rdd)
 
 #temp_celsius, temp_fahrenheit, today
 df = df.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius))).\
@@ -101,24 +107,33 @@ data_weather_description = respHist['data'][0]['weather'][0]['description']
 print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Checando dados da API Hist >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 print(f"Data da previsão: {hist_day}\nTemperatura em kelvin: {temp_kelvin_hist}\nTemperatura em Celsius: {temp_celsius_hist}\nTemperatura em farenheit: {temp_fahrenheit_hist}\n")
 
-respHistX = []
-respHistX.append(respHist)
+respHistX = [respHist]
+print(respHistX)
+# respHistX.append(respHist)
 
-dfHist = spark.createDataFrame(respHistX)
+dfPdHist = pd.DataFrame([respHist])
+dfHist = spark.createDataFrame(dfPdHist)
 dfHist = dfHist.withColumn("joinId", monotonically_increasing_id())
+
+# rddHist = sc.parallelize([respHist])
+# dfHist = spark.read.json(rddHist)
 
 print("DF Hist antes do explode Func:\n")
 dfHist.show(truncate=False)
 dfHist.printSchema()
 
 dfHist = explodeFuncMap(dfHist)
+# dfHist = explodeFunc(dfHist)
+# dfHist = explodeFunc(dfHist)
+dfHist.printSchema()
+dfHist.show(truncate=False)
 
 #temp_celsius, temp_fahrenheit, today
 dfHist = dfHist.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius_hist))).\
         withColumn("temp_fahrenheit", lit("{:.2f}".format(temp_fahrenheit_hist))).\
         withColumn("prediction_date", lit(hist_day))
 
-dfHist = dfHist.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius_hist))).\
+dfHist = dfHist.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius))).\
         withColumn("data_feels_like", kelvin_to_celsius(col("data_feels_like"))).\
         withColumn("temp_min_celsius", lit(None)).\
         withColumn("temp_max_celsius", lit(None)).\
@@ -126,9 +141,9 @@ dfHist = dfHist.withColumn("temp_celsius", lit("{:.2f}".format(temp_celsius_hist
         withColumn("sys_sunset", from_unixtime(col("data_sunset"),"yyyy-MM-dd HH:mm:ss")).\
         withColumn("new_id", F.expr("uuid()")).\
         withColumn("city_name", lit("São Paulo")).\
-        withColumn("prediction_date", lit(hist_day)).\
-        withColumn("data_weather_description", lit(data_weather_description)).\
-        withColumn("data_weather_main", lit(data_weather_main))
+        withColumn("prediction_date", lit(today))
+        # withColumn("data_weather_description", lit(data_weather_description)).\
+        # withColumn("data_weather_main", lit(data_weather_main))
 dfHist = dfHist.select([col(c).cast("string") for c in dfHist.columns])
 dfHist = dfHist.withColumn("id_common", monotonically_increasing_id())
 
@@ -138,6 +153,7 @@ dfHist = dfHist.withColumn('id_common', (dfHist.id_common + timeId2).cast("int")
 
 cols2 = ["id_common","new_id","city_name","temp_celsius","prediction_date","lat","lon","sys_sunrise","sys_sunset","data_weather_description","data_weather_main","data_wind_deg","data_wind_speed","data_feels_like","temp_min_celsius","temp_max_celsius"]
 dfHistf = dfHist.select(*cols2)
+
 
 print("DF Hist 1 depois do explode Func:\n")
 dfHistf.show(truncate=False)
