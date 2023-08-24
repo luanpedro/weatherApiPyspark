@@ -30,7 +30,9 @@ spark = (SparkSession
          .getOrCreate()
          )
 
-response = respApi()
+response, status = respApi()
+print(response)
+print(status)
 
 print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Checando dados da API today >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 print(f"Data da previsão: {today}\nTemperatura em kelvin: {temp_kelvin}\nTemperatura em Celsius: {temp_celsius}\nTemperatura em farenheit: {temp_fahrenheit}\n")
