@@ -106,7 +106,8 @@ def respApi():
     url = BASE_URL + "appid=" + api_key + "&q=" + city
     #getting response
     response = requests.get(url).json()
-    return response
+    status = requests.get(url).status_code
+    return response, status
 
 def respApiHist(time):
     #sp location lat e long
@@ -121,7 +122,7 @@ def respApiHist(time):
     response = requests.get(url).json()
     return response
 
-response = respApi()
+response, status = respApi()
 temp_kelvin = response['main']['temp']
 feels_like_kelvin = response['main']['feels_like']
 temp_celsius, temp_fahrenheit = kelvin_to_celsius_fahrenheit(temp_kelvin)
