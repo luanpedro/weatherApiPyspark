@@ -1,7 +1,7 @@
-/files/yellow_tripdata_nyc_2022_04.parquet
-/files/result_of_weatherApi_Request_as_DF.jl
-/files/*.csv
+files/yellow_tripdata_nyc_2022_04.parquet
+files/*.txt
+files/*.csv
 .DS_Store
-/luanVenv
-/apiKey.json
-/doc/Tech Challenge (20230126).pdf
+luanVenv
+apiKey.json
+doc/Tech Challenge (20230126).pdf
